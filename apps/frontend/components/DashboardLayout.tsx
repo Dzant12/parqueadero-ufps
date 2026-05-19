@@ -33,18 +33,18 @@ export default function DashboardLayout({ children, user }: DashboardLayoutProps
       {/* Sidebar Overlay for mobile */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 2xl:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 transform lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <div className={`fixed inset-y-0 left-0 z-50 transform 2xl:relative 2xl:translate-x-0 transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <Sidebar user={user} onClose={() => setIsSidebarOpen(false)} />
       </div>
 
       {/* Main Content Area */}
-      <div className="flex flex-col flex-1 min-h-screen w-full lg:min-w-0">
+      <div className="flex flex-col flex-1 min-h-screen w-full 2xl:min-w-0">
         <TopBar onToggleSidebar={toggleSidebar} />
         <main className="flex-1">
           {children}

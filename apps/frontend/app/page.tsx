@@ -109,8 +109,8 @@ export default async function MonitoringPage({ searchParams }: Props) {
       {/* Dashboard Grid */}
       <div className="grid grid-cols-12 gap-6">
         {/* Main Functional Section */}
-        <div className="col-span-12 lg:col-span-8 space-y-6">
-          <div className="aspect-video lg:aspect-auto lg:h-[450px]">
+        <div className="col-span-12 xl:col-span-8 space-y-6">
+          <div className="aspect-video xl:aspect-auto xl:h-[450px]">
             <GateConsole zone={activeZone} lastPlate={lastLog?.plate} />
           </div>
 
@@ -169,7 +169,7 @@ export default async function MonitoringPage({ searchParams }: Props) {
         </div>
 
         {/* Right Column - Control Panel */}
-        <div className="col-span-12 lg:col-span-4 space-y-6">
+        <div className="col-span-12 xl:col-span-4 space-y-6">
           <div className={`card overflow-hidden border-t-4 ${isExit ? "border-amber-600" : "border-[var(--color-primary)]"}`}>
             <div className="px-6 py-4 bg-[var(--color-surface-container-low)] border-b border-[var(--color-outline-variant)]/15">
               <div className="flex items-center justify-between">

@@ -35,7 +35,7 @@ export default async function AnalyticsPage() {
           <h2 className="page-title">Analíticas de Operaciones</h2>
           <p className="page-subtitle">Métricas de capacidad y tráfico en tiempo real</p>
         </div>
-        <div className="flex flex-wrap items-center gap-3 mt-4 lg:mt-0">
+        <div className="flex flex-wrap items-center gap-3 mt-4 xl:mt-0">
           <div className="flex bg-[var(--color-surface-container)] rounded-lg p-1 w-full sm:w-auto">
             <button className="flex-1 px-4 py-1.5 text-xs font-bold bg-[var(--color-surface-container-lowest)] shadow-sm rounded-md text-[var(--color-primary)]">Hoy</button>
             <button className="flex-1 px-4 py-1.5 text-xs font-bold text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)]">Semana</button>
@@ -56,7 +56,7 @@ export default async function AnalyticsPage() {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         {[
           { label: "Capacidad Total", value: "4,850", sub: "Espacios", bar: 100, extraColor: "" },
           { label: "Ocupación Actual", value: `${Math.round((totalVehicles / 4850) * 100)}%`, sub: `${totalVehicles} Vehículos`, bar: Math.round((totalVehicles / 4850) * 100), extraColor: "text-[var(--color-primary)] font-bold" },
@@ -96,7 +96,7 @@ export default async function AnalyticsPage() {
       {/* Analytical Visuals (Bento) */}
       <div className="bento-grid">
         {/* Usage by User Type */}
-        <div className="col-span-12 lg:col-span-5 card-padded !p-8">
+        <div className="col-span-12 xl:col-span-5 card-padded !p-8">
           <div className="flex justify-between items-start mb-10">
             <div>
               <h3 className="font-[var(--font-headline)] font-extrabold text-[var(--color-on-surface)]">Uso por Tipo de Usuario</h3>
@@ -127,7 +127,7 @@ export default async function AnalyticsPage() {
         </div>
 
         {/* Traffic Trends */}
-        <div className="col-span-12 lg:col-span-7 card-padded !p-8">
+        <div className="col-span-12 xl:col-span-7 card-padded !p-8">
           <div className="flex justify-between items-start mb-8">
             <div>
               <h3 className="font-[var(--font-headline)] font-extrabold text-[var(--color-on-surface)]">Tráfico de Estacionamiento</h3>

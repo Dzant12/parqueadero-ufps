@@ -43,7 +43,7 @@ export default function Sidebar({ user, onClose }: SidebarProps) {
     : navItems;
 
   return (
-    <aside className="relative h-full flex flex-col bg-[var(--color-surface-container-lowest)] border-r border-[var(--color-outline-variant)]/20 w-64 lg:static">
+    <aside className="relative h-full flex flex-col bg-[var(--color-surface-container-lowest)] border-r border-[var(--color-outline-variant)]/20 w-64 2xl:static">
       {/* Logo */}
       <div className="px-6 py-8 border-b border-[var(--color-outline-variant)]/15 relative">
         <h1 className="text-base font-black tracking-tight text-[var(--color-primary)] uppercase leading-tight">
@@ -56,7 +56,7 @@ export default function Sidebar({ user, onClose }: SidebarProps) {
         {/* Close Button Mobile */}
         <button 
           onClick={onClose}
-          className="lg:hidden absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)] rounded-full transition-colors"
+          className="2xl:hidden absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)] rounded-full transition-colors"
         >
           <span className="material-symbols-outlined text-lg">close</span>
         </button>

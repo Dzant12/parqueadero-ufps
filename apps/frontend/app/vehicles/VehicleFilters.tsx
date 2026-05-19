@@ -47,7 +47,7 @@ export default function VehicleFilters() {
 
   return (
     <div className="card-padded border-b-2 border-[var(--color-primary)]">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <div className="space-y-2">
           <label className="font-[var(--font-label)] text-[0.75rem] font-bold text-[var(--color-on-surface-variant)] uppercase tracking-wider">Placa</label>
           <div className="relative">
