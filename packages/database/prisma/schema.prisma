@@ -1,5 +1,11 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// ==============================================================================
+// SCHEMA.PRISMA
+// Definición del esquema del modelo relacional para el sistema de Parqueadero UFPS.
+// 
+// Este esquema describe la estructura de datos relacional para el control de acceso
+// del parqueadero, incluyendo modelos para estudiantes, vehículos, registros
+// de acceso, usuarios del sistema y solicitudes de invitados.
+// ==============================================================================
 
 generator client {
   provider = "prisma-client-js"
@@ -9,87 +15,153 @@ datasource db {
   provider  = "postgresql"
 }
 
+/// Representa a un estudiante de la institución registrado en el sistema.
+/// Los estudiantes pueden poseer uno o múltiples vehículos.
 model Student {
   id         Int       @id @default(autoincrement())
+  /// Código institucional o número de carnet único del estudiante (ej: "1151620")
   cardnumber String    @unique
+  /// Nombres del estudiante
   firstname  String
+  /// Apellidos del estudiante
   surname    String
+  /// Correo electrónico institucional o personal primario
   email      String?
+  /// Correo electrónico institucional o personal alternativo/profesional
   emailpro   String?
+  /// Lista de vehículos asociados y registrados bajo la propiedad de este estudiante
   vehicles   Vehicle[]
+  /// Fecha y hora de creación del registro en el sistema
   createdAt  DateTime  @default(now())
+  /// Fecha y hora de la última actualización del registro en el sistema
   updatedAt  DateTime  @updatedAt
 }
 
+/// Representa un vehículo autorizado (automóvil, motocicleta o especial) para ingresar al parqueadero.
+/// Puede estar asociado a un estudiante (propietario) o ser un registro de vehículo genérico/visitante.
 model Vehicle {
   id           Int       @id @default(autoincrement())
+  /// Placa vehicular única del vehículo (ej: "PRK-8821")
   plate        String    @unique
-  rfidTag      String?   @unique // UID del TAG RFID asignado (ej: "A3:F2:01:CC")
+  /// UID único de la tarjeta física RFID vinculada al vehículo para acceso automatizado (ej: "A3:F2:01:CC")
+  rfidTag      String?   @unique
+  /// Marca del vehículo (ej: "Tesla", "Yamaha")
   brand        String?
+  /// Modelo o línea específica del vehículo (ej: "Model 3", "MT-07")
   model        String
+  /// Color exterior del vehículo (ej: "Blanco Oxford", "Azul Racing")
   color        String
+  /// Icono visual representativo para la interfaz de usuario (ej: "directions_car", "motorcycle")
   icon         String
+  /// Departamento o programa académico de afiliación (ej: "Ingeniería de Sistemas")
   department   String
+  /// Estado del permiso de acceso actual (ej: "Permiso Activo", "Suspendido", "Renovación Pendiente")
   status       String
+  /// Fecha y hora en la que se registró el vehículo en el sistema
   registeredAt DateTime  @default(now())
 
+  /// Identificador único del estudiante propietario del vehículo (opcional si es visitante)
   ownerId      Int?
+  /// Relación con el estudiante propietario del vehículo
   owner        Student?  @relation(fields: [ownerId], references: [id])
 }
 
+/// Representa una solicitud de acceso temporal registrada por un anfitrión
+/// para autorizar el ingreso de un visitante externo al campus.
 model AccessRequest {
   id            Int      @id @default(autoincrement())
+  /// Nombre completo del visitante externo que solicita el acceso
   requesterName String
+  /// Placa del vehículo del visitante temporal
   plateNumber   String
+  /// Fecha programada en la que se llevará a cabo la visita
   visitDate     DateTime @default(now())
-  reason        String   // Servirá como Descripción libre
-  status        String   @default("PENDIENTE") // PENDING, APPROVED, EXPIRED
+  /// Justificación, motivo o descripción libre sobre el propósito de la visita
+  reason        String   
+  /// Estado actual del trámite de acceso (ej: "PENDIENTE", "APPROVED", "EXPIRED")
+  status        String   @default("PENDIENTE")
   
-  hostCode      String?  // Código del anfitrión
-  hostCarnetPath String? // Ruta del archivo del carnet del anfitrión
-  phone         String?  // Número de teléfono del invitado
+  /// Código institucional del anfitrión que patrocina o autoriza la visita
+  hostCode      String?  
+  /// URL o ruta local del archivo del carnet digitalizado del anfitrión
+  hostCarnetPath String? 
+  /// Número telefónico de contacto del visitante
+  phone         String?  
   
+  /// Fecha y hora de creación de la solicitud en la plataforma
   createdAt     DateTime @default(now())
 }
 
+/// Bitácora o histórico de eventos de accesos y denegaciones (entradas/salidas) del parqueadero.
 model AccessLog {
   id        Int      @id @default(autoincrement())
+  /// Marca de tiempo exacta en la que ocurrió el intento de acceso
   timestamp DateTime @default(now())
+  /// Placa capturada o asociada al intento de acceso (ej: "UNKNOWN" si no se reconoce o es inválido)
   plate     String
-  rfidTag   String?  // UID del TAG si el acceso fue por RFID
+  /// UID de la tarjeta RFID si el acceso fue procesado mediante lector inalámbrico
+  rfidTag   String?  
+  /// Rol o tipo de usuario que realizó el acceso (ej: "Estudiante", "Docente", "Visitante", "Desconocido")
   userType  String
+  /// Punto de control o zona física donde se realizó el evento (ej: "Entrada Principal", "Salida Principal")
   zone      String
-  status    Boolean  // true = GRANTED, false = REJECTED
-  method    String   @default("MANUAL") // "RFID" | "MANUAL" | "PLACA"
+  /// Estado del acceso: true para concedido/exitoso (GRANTED), false para rechazado/denegado (REJECTED)
+  status    Boolean  
+  /// Método de verificación empleado para el acceso (ej: "RFID", "MANUAL", "PLACA")
+  method    String   @default("MANUAL") 
 }
 
+/// Solicitud de pre-registro realizada por un estudiante, docente o administrativo
+/// para registrar su vehículo y obtener un permiso de parqueo formal.
 model UserRegistration {
   id                Int      @id @default(autoincrement())
-  userType          String   // ESTUDIANTE, ADMINISTRATIVO, DOCENTE
+  /// Categoría o estamento del usuario (ej: "ESTUDIANTE", "ADMINISTRATIVO", "DOCENTE")
+  userType          String   
+  /// Correo electrónico institucional de contacto
   email             String
+  /// Código institucional único del solicitante (ej: "1151620")
   institutionalCode String
+  /// Nombre completo de la persona solicitante
   fullName          String
+  /// Enlace o ruta de almacenamiento del carnet institucional subido
   carnetFilePath    String
+  /// Enlace o ruta de almacenamiento del documento de propiedad del vehículo (Tarjeta de Propiedad)
   ownershipFilePath String
+  /// Placa vehicular para la cual se solicita el permiso
   plate             String
+  /// Marca del vehículo a registrar (opcional)
   vehicleBrand      String?
+  /// Modelo o línea del vehículo a registrar (opcional)
   vehicleModel      String?
-  status            String   @default("PENDIENTE") // PENDIENTE, APROBADO, RECHAZADO
+  /// Estado del proceso de aprobación de la solicitud (ej: "PENDIENTE", "APROBADO", "RECHAZADO")
+  status            String   @default("PENDIENTE") 
+  /// Fecha y hora en la que se radicó la solicitud en el sistema
   createdAt         DateTime @default(now())
 }
 
+/// Cuentas de usuario de personal administrativo y de vigilancia para acceder a la intranet de gestión.
 model User {
   id        Int      @id @default(autoincrement())
+  /// Nombre de usuario único para inicio de sesión en la plataforma
   username  String   @unique
+  /// Contraseña del usuario almacenada de forma segura mediante encriptación Hashing (Bcrypt)
   password  String
+  /// Nombre y apellido completo del usuario
   name      String?
+  /// Correo institucional o personal de contacto
   email     String?
+  /// Rol y nivel de privilegios asignados en el sistema de gestión del parqueadero
   role      UserRole @default(CELADOR)
+  /// Fecha de creación de la cuenta
   createdAt DateTime @default(now())
+  /// Fecha de la última modificación en la cuenta de usuario
   updatedAt DateTime @updatedAt
 }
 
+/// Roles autorizados en el sistema para control de accesos y permisos.
 enum UserRole {
+  /// Administrador general con acceso a todo el dashboard, reportes, usuarios y configuraciones globales
   ADMIN
+  /// Personal de vigilancia a cargo del registro de accesos en los portones, consultas y control en tiempo real
   CELADOR
 }
