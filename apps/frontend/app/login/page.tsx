@@ -135,7 +135,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <style jsx global>{`
+      <style>{`
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
           25% { transform: translateX(-5px); }

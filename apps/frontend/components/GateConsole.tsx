@@ -111,7 +111,7 @@ export default function GateConsole({ zone, lastPlate }: GateConsoleProps) {
         ))}
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes scan {
           0%, 100% { transform: translateY(-100px); opacity: 0; }
           50% { transform: translateY(100px); opacity: 0.5; }
