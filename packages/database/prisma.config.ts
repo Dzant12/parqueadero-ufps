@@ -30,6 +30,10 @@ import { PrismaPg } from "@prisma/adapter-pg";
 export default defineConfig({
   // Ruta relativa que apunta al esquema de base de datos principal de Prisma
   schema: "prisma/schema.prisma",
+
+  datasource: {
+    url: process.env.DATABASE_URL,
+  },
   
   // Configuración del almacenamiento e historial de migraciones generadas
   migrations: {

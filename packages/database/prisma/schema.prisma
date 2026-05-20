@@ -29,6 +29,8 @@ model Student {
   email      String?
   /// Correo electrónico institucional o personal alternativo/profesional
   emailpro   String?
+  /// Tipo de usuario (estudiante, docente, administrativo)
+  userType   String?
   /// Lista de vehículos asociados y registrados bajo la propiedad de este estudiante
   vehicles   Vehicle[]
   /// Fecha y hora de creación del registro en el sistema

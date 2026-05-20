@@ -40,38 +40,42 @@ router.get("/", async (req: Request, res: Response) => {
   
   const now = new Date();
   
-  // Generación imperativa de 200 registros de auditoría
-  for (let i = 0; i < 200; i++) {
-    // Construcción sintáctica de placa de automóvil colombiana standard (Ej: ABC-123)
+  // Generación de 600 registros de auditoría:
+  // - 100 para hoy (últimas 24 horas) para garantizar datos activos en el dashboard diario
+  // - 500 distribuidos en los últimos 30 días para alimentar las vistas semanales y mensuales
+  for (let i = 0; i < 600; i++) {
     const l1 = letters.charAt(Math.floor(Math.random() * letters.length));
     const l2 = letters.charAt(Math.floor(Math.random() * letters.length));
     const l3 = letters.charAt(Math.floor(Math.random() * letters.length));
-    const num = Math.floor(Math.random() * 900) + 100; // Genera un entero de 3 dígitos entre 100 y 999
+    const num = Math.floor(Math.random() * 900) + 100;
     const plate = `${l1}${l2}${l3}-${num}`;
 
-    // Distribución temporal uniforme dentro de las últimas 24 horas
-    const date = new Date(now.getTime() - Math.random() * 24 * 60 * 60 * 1000);
+    let date: Date;
+    if (i < 100) {
+      // 100 logs para el día de hoy (últimas 24 horas)
+      date = new Date(now.getTime() - Math.random() * 24 * 60 * 60 * 1000);
+    } else {
+      // 500 logs repartidos en los últimos 30 días
+      date = new Date(now.getTime() - Math.random() * 30 * 24 * 60 * 60 * 1000);
+    }
     
     // --- Modelado de Horas Pico (Rush Hours) ---
     // Agrupa estadísticamente una porción mayoritaria de eventos en la mañana (6:00 AM a 12:00 PM)
-    // para generar curvas de comportamiento realistas en los gráficos lineales del frontend.
     if (Math.random() > 0.4) {
-      date.setHours(Math.floor(Math.random() * 7) + 6); // Rango horario de 6 a 12
+      date.setHours(Math.floor(Math.random() * 7) + 6);
     }
 
-    // Composición de la entidad del log simulado
     logs.push({
       timestamp: date,
       plate: plate,
       userType: userTypes[Math.floor(Math.random() * userTypes.length)],
       zone: zones[Math.floor(Math.random() * zones.length)],
-      status: Math.random() > 0.15, // Umbral del 85% para estado concedido (true)
-      method: Math.random() > 0.5 ? "RFID" : "MANUAL" // Distribución equilibrada de canales de validación
+      status: Math.random() > 0.15,
+      method: Math.random() > 0.5 ? "RFID" : "MANUAL"
     });
   }
 
   try {
-    // Operación optimizada de persistencia masiva en una sola query (Bulk Insert)
     await prisma.accessLog.createMany({
       data: logs
     });

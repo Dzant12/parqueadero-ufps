@@ -78,6 +78,26 @@ async function main() {
     const isUfpsEmail = (val: string | undefined) =>
       val && val.toLowerCase().includes("@ufps.edu.co") ? val.trim() : null;
 
+    const categoryMapping: Record<string, string> = {
+      'C4': 'CUARENTENA',
+      'EG': 'Egresado',
+      'EST': 'Estadistico',
+      'GU': 'Invitado',
+      'IL': 'Préstamo interbibliotecario',
+      'INV': 'Investigadores',
+      'NM': 'No matriculado',
+      'PE': 'Préstamo especial',
+      'PG': 'Pregrado',
+      'PO': 'Postgrados',
+      'PREU': 'Preuniversitario',
+      'PS': 'Primer semestre',
+      'PT': 'Administrativo',
+      'RD': 'Retiro de documentos',
+      'S': 'Staff',
+      'SIES': 'SIES+',
+      'T': 'Docente'
+    };
+
     // Mapeo de la estructura del CSV al formato definido en el esquema Prisma
     const studentsData = (records as Record<string, string>[]).map(record => ({
       cardnumber: record.cardnumber,
@@ -85,6 +105,7 @@ async function main() {
       surname: record.surname?.trim().toUpperCase() || "",
       email: isUfpsEmail(record.email),
       emailpro: isUfpsEmail(record.emailpro),
+      userType: record.categorycode ? categoryMapping[record.categorycode.toUpperCase()] || record.categorycode : null,
     }));
 
     // Optimización de inserción masiva: El motor de base de datos puede fallar con
