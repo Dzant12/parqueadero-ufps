@@ -9,11 +9,11 @@ interface TopBarProps {
 export default function TopBar({ onToggleSidebar }: TopBarProps) {
   return (
     <header className="flex justify-between items-center w-full px-4 md:px-6 py-3 bg-[var(--color-surface-container-lowest)]/90 backdrop-blur-xl sticky top-0 z-40 border-b border-[var(--color-outline-variant)]/20 shadow-sm">
-      <div className="flex items-center gap-4 lg:gap-8">
+      <div className="flex items-center gap-4 2xl:gap-8">
         {/* Toggle Button for mobile */}
         <button 
           onClick={onToggleSidebar}
-          className="lg:hidden w-10 h-10 flex items-center justify-center text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)] rounded-lg transition-colors"
+          className="2xl:hidden w-10 h-10 flex items-center justify-center text-[var(--color-on-surface-variant)] hover:bg-[var(--color-surface-container-low)] rounded-lg transition-colors"
         >
           <span className="material-symbols-outlined">menu</span>
         </button>
