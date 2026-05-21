@@ -78,10 +78,6 @@ export default async function VehiclesPage({ searchParams }: PageProps) {
           <h2 className="page-title">Registro de Vehículos</h2>
           <p className="page-subtitle">Gestionar permisos del campus y logs de acceso de vehículos</p>
         </div>
-        <button className="btn btn-primary self-start md:self-auto">
-          <span className="material-symbols-outlined">add</span>
-          Registrar Nuevo Vehículo
-        </button>
       </div>
 
 
