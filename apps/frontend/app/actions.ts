@@ -191,7 +191,7 @@ export async function verifyPlate(plate: string, zone?: string) {
  * @returns {Promise<void>}
  * @throws {Error} Si el registro viola el flujo lógico de Anti-Passback para accesos permitidos.
  */
-export async function registerAccess(plate: string, granted: boolean, userType: string, zone: string) {
+export async function registerAccess(plate: string, granted: boolean, userType: string, zone: string, reason?: string) {
   
   // Re-validación estricta de Anti-Passback previo a la escritura final
   if (granted) {
@@ -226,6 +226,7 @@ export async function registerAccess(plate: string, granted: boolean, userType: 
       status: granted,
       userType,
       zone,
+      reason,
     }
   });
 

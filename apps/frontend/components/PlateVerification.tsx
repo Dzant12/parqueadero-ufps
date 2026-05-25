@@ -38,6 +38,7 @@ export default function PlateVerification({ zone }: { zone: string }) {
   const [plate, setPlate] = useState(""); // Valor textual de la placa ingresada en el input
   const [loading, setLoading] = useState(false); // Estado de procesamiento asíncrono (bloquea botones)
   const [showCarnetModal, setShowCarnetModal] = useState(false); // Apertura de modal a pantalla completa
+  const [reason, setReason] = useState(""); // Motivo de acceso manual
   
   // Detalle de la consulta asíncrona resuelta por verifyPlate
   const [result, setResult] = useState<{
@@ -89,16 +90,19 @@ export default function PlateVerification({ zone }: { zone: string }) {
         plate.toUpperCase().trim(),
         granted,
         result?.type || "Desconocido",
-        zone
+        zone,
+        reason.trim() || undefined
       );
       
       // Resetea los estados de la interfaz ante un registro exitoso
       setResult(null);
       setPlate("");
-    } catch (error: any) {
+      setReason("");
+    } catch (error: unknown) {
       console.error("[PlateVerification] Error en registro de acceso:", error);
       // Despliega error de negocio controlado (ej: error de Anti-Passback)
-      alert(error.message || "Error al registrar acceso");
+      const errorMessage = error instanceof Error ? error.message : "Error al registrar acceso";
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -210,28 +214,45 @@ export default function PlateVerification({ zone }: { zone: string }) {
             </div>
           )}
 
+          {/* Campo de Motivo de Ingreso */}
+          <div className="mt-4 mb-4 pt-3 border-t border-[var(--color-outline-variant)]/10">
+            <label className="block text-[0.65rem] font-black uppercase tracking-wider text-[var(--color-on-surface-variant)] mb-2">
+              Motivo de Acceso / Observación <span className="text-[var(--color-error)]">*</span>
+            </label>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Ej: Ingreso de visitante para reunión académica, mantenimiento de redes, etc..."
+              rows={2}
+              className="w-full bg-[var(--color-surface-container-low)] border border-[var(--color-outline-variant)]/30 rounded-lg px-3 py-2 text-xs text-[var(--color-on-surface)] focus:outline-none focus:border-[var(--color-primary)] placeholder-[var(--color-on-surface-variant)]/40 resize-none transition-all duration-200"
+              disabled={loading}
+              maxLength={200}
+              required
+            />
+          </div>
+
           {/* Botones de Acción: Permitir / Denegar */}
           <div className="flex gap-2 pt-3 border-t border-[var(--color-outline-variant)]/10">
             <button
               onClick={() => handleRegister(true)}
-              disabled={loading}
+              disabled={loading || !reason.trim()}
               className={`flex-1 py-2 rounded font-bold text-xs flex items-center justify-center gap-1 transition-all ${
                 result.status === "authorized"
                   ? (zone.includes("Salida") ? "bg-amber-600 text-white hover:bg-amber-700" : "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary)]/90")
                   : "bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-primary)] hover:text-white"
-              }`}
+              } ${(!reason.trim() && !loading) ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <span className="material-symbols-outlined text-sm">{zone.includes("Salida") ? "logout" : "login"}</span>
               {zone.includes("Salida") ? "Permitir Salida" : "Permitir Entrada"}
             </button>
             <button
               onClick={() => handleRegister(false)}
-              disabled={loading}
+              disabled={loading || !reason.trim()}
               className={`flex-1 py-2 rounded font-bold text-xs flex items-center justify-center gap-1 transition-all ${
                 result.status === "unauthorized"
                   ? "bg-[var(--color-error)] text-white hover:bg-[var(--color-error)]/90"
                   : "bg-[var(--color-surface-container-high)] text-[var(--color-on-surface-variant)] hover:bg-[var(--color-error)] hover:text-white"
-              }`}
+              } ${(!reason.trim() && !loading) ? "opacity-50 cursor-not-allowed" : ""}`}
             >
               <span className="material-symbols-outlined text-sm">block</span>
               Denegar

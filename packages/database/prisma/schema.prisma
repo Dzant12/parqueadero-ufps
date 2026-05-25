@@ -111,6 +111,8 @@ model AccessLog {
   status    Boolean  
   /// Método de verificación empleado para el acceso (ej: "RFID", "MANUAL", "PLACA")
   method    String   @default("MANUAL") 
+  /// Motivo de ingreso o justificación cuando se realiza un registro manual
+  reason    String?
 }
 
 /// Solicitud de pre-registro realizada por un estudiante, docente o administrativo

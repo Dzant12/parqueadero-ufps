@@ -166,7 +166,8 @@ exports.Prisma.AccessLogScalarFieldEnum = {
   userType: 'userType',
   zone: 'zone',
   status: 'status',
-  method: 'method'
+  method: 'method',
+  reason: 'reason'
 };
 
 exports.Prisma.UserRegistrationScalarFieldEnum = {

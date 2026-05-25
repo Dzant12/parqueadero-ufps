@@ -1,7 +1,9 @@
 "use client";
 
+import { AccessLog } from "../generated/prisma/client";
+
 interface ExportButtonProps {
-  data: any[];
+  data: AccessLog[];
   filename?: string;
 }
 
@@ -12,7 +14,7 @@ export default function TableExportButton({ data, filename = "log_actividad" }: 
       return;
     }
 
-    const headers = ["ID", "Fecha/Hora", "Placa", "Metodo", "Zona", "Estado"];
+    const headers = ["ID", "Fecha/Hora", "Placa", "Metodo", "Zona", "Estado", "Motivo"];
     const csvRows = [
       headers.join(","),
       ...data.map(row => [
@@ -21,7 +23,8 @@ export default function TableExportButton({ data, filename = "log_actividad" }: 
         row.plate,
         row.method || "MANUAL",
         row.zone,
-        row.status ? "PERMITIDO" : "DENEGADO"
+        row.status ? "PERMITIDO" : "DENEGADO",
+        row.reason || ""
       ].map(field => `"${field}"`).join(","))
     ];
 

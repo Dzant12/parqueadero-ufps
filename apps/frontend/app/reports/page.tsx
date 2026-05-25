@@ -214,13 +214,13 @@ export default async function ReportsPage({
           <table className="table-base">
             <thead className="table-thead">
               <tr>
-                {["Marca de Tiempo", "Placa", "Tipo de Usuario", "Zona", "Estado"].map((h) => (
+                {["Marca de Tiempo", "Placa", "Tipo de Usuario", "Zona", "Estado", "Motivo"].map((h) => (
                   <th key={h}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {activityLogs.map((row: { id: number; plate: string; timestamp: Date; zone: string; status: boolean; userType: string }) => (
+              {activityLogs.map((row: { id: number; plate: string; timestamp: Date; zone: string; status: boolean; userType: string; reason?: string | null }) => (
                 <tr key={row.id} className="table-row group">
                   <td className="table-cell">
                     <div className="flex flex-col">
@@ -245,7 +245,11 @@ export default async function ReportsPage({
                       </span>
                     </div>
                   </td>
-
+                  <td className="table-cell">
+                    <span className="text-xs text-[var(--color-on-surface-variant)] font-medium max-w-[200px] truncate block" title={row.reason || ""}>
+                      {row.reason || "-"}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>

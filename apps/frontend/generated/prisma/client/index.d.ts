@@ -4842,6 +4842,7 @@ export namespace Prisma {
     zone: string | null
     status: boolean | null
     method: string | null
+    reason: string | null
   }
 
   export type AccessLogMaxAggregateOutputType = {
@@ -4853,6 +4854,7 @@ export namespace Prisma {
     zone: string | null
     status: boolean | null
     method: string | null
+    reason: string | null
   }
 
   export type AccessLogCountAggregateOutputType = {
@@ -4864,6 +4866,7 @@ export namespace Prisma {
     zone: number
     status: number
     method: number
+    reason: number
     _all: number
   }
 
@@ -4885,6 +4888,7 @@ export namespace Prisma {
     zone?: true
     status?: true
     method?: true
+    reason?: true
   }
 
   export type AccessLogMaxAggregateInputType = {
@@ -4896,6 +4900,7 @@ export namespace Prisma {
     zone?: true
     status?: true
     method?: true
+    reason?: true
   }
 
   export type AccessLogCountAggregateInputType = {
@@ -4907,6 +4912,7 @@ export namespace Prisma {
     zone?: true
     status?: true
     method?: true
+    reason?: true
     _all?: true
   }
 
@@ -5005,6 +5011,7 @@ export namespace Prisma {
     zone: string
     status: boolean
     method: string
+    reason: string | null
     _count: AccessLogCountAggregateOutputType | null
     _avg: AccessLogAvgAggregateOutputType | null
     _sum: AccessLogSumAggregateOutputType | null
@@ -5035,6 +5042,7 @@ export namespace Prisma {
     zone?: boolean
     status?: boolean
     method?: boolean
+    reason?: boolean
   }, ExtArgs["result"]["accessLog"]>
 
   export type AccessLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5046,6 +5054,7 @@ export namespace Prisma {
     zone?: boolean
     status?: boolean
     method?: boolean
+    reason?: boolean
   }, ExtArgs["result"]["accessLog"]>
 
   export type AccessLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -5057,6 +5066,7 @@ export namespace Prisma {
     zone?: boolean
     status?: boolean
     method?: boolean
+    reason?: boolean
   }, ExtArgs["result"]["accessLog"]>
 
   export type AccessLogSelectScalar = {
@@ -5068,9 +5078,10 @@ export namespace Prisma {
     zone?: boolean
     status?: boolean
     method?: boolean
+    reason?: boolean
   }
 
-  export type AccessLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "plate" | "rfidTag" | "userType" | "zone" | "status" | "method", ExtArgs["result"]["accessLog"]>
+  export type AccessLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "timestamp" | "plate" | "rfidTag" | "userType" | "zone" | "status" | "method" | "reason", ExtArgs["result"]["accessLog"]>
 
   export type $AccessLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "AccessLog"
@@ -5084,6 +5095,7 @@ export namespace Prisma {
       zone: string
       status: boolean
       method: string
+      reason: string | null
     }, ExtArgs["result"]["accessLog"]>
     composites: {}
   }
@@ -5515,6 +5527,7 @@ export namespace Prisma {
     readonly zone: FieldRef<"AccessLog", 'String'>
     readonly status: FieldRef<"AccessLog", 'Boolean'>
     readonly method: FieldRef<"AccessLog", 'String'>
+    readonly reason: FieldRef<"AccessLog", 'String'>
   }
     
 
@@ -8153,7 +8166,8 @@ export namespace Prisma {
     userType: 'userType',
     zone: 'zone',
     status: 'status',
-    method: 'method'
+    method: 'method',
+    reason: 'reason'
   };
 
   export type AccessLogScalarFieldEnum = (typeof AccessLogScalarFieldEnum)[keyof typeof AccessLogScalarFieldEnum]
@@ -8550,6 +8564,7 @@ export namespace Prisma {
     zone?: StringFilter<"AccessLog"> | string
     status?: BoolFilter<"AccessLog"> | boolean
     method?: StringFilter<"AccessLog"> | string
+    reason?: StringNullableFilter<"AccessLog"> | string | null
   }
 
   export type AccessLogOrderByWithRelationInput = {
@@ -8561,6 +8576,7 @@ export namespace Prisma {
     zone?: SortOrder
     status?: SortOrder
     method?: SortOrder
+    reason?: SortOrderInput | SortOrder
   }
 
   export type AccessLogWhereUniqueInput = Prisma.AtLeast<{
@@ -8575,6 +8591,7 @@ export namespace Prisma {
     zone?: StringFilter<"AccessLog"> | string
     status?: BoolFilter<"AccessLog"> | boolean
     method?: StringFilter<"AccessLog"> | string
+    reason?: StringNullableFilter<"AccessLog"> | string | null
   }, "id">
 
   export type AccessLogOrderByWithAggregationInput = {
@@ -8586,6 +8603,7 @@ export namespace Prisma {
     zone?: SortOrder
     status?: SortOrder
     method?: SortOrder
+    reason?: SortOrderInput | SortOrder
     _count?: AccessLogCountOrderByAggregateInput
     _avg?: AccessLogAvgOrderByAggregateInput
     _max?: AccessLogMaxOrderByAggregateInput
@@ -8605,6 +8623,7 @@ export namespace Prisma {
     zone?: StringWithAggregatesFilter<"AccessLog"> | string
     status?: BoolWithAggregatesFilter<"AccessLog"> | boolean
     method?: StringWithAggregatesFilter<"AccessLog"> | string
+    reason?: StringNullableWithAggregatesFilter<"AccessLog"> | string | null
   }
 
   export type UserRegistrationWhereInput = {
@@ -9033,6 +9052,7 @@ export namespace Prisma {
     zone: string
     status: boolean
     method?: string
+    reason?: string | null
   }
 
   export type AccessLogUncheckedCreateInput = {
@@ -9044,6 +9064,7 @@ export namespace Prisma {
     zone: string
     status: boolean
     method?: string
+    reason?: string | null
   }
 
   export type AccessLogUpdateInput = {
@@ -9054,6 +9075,7 @@ export namespace Prisma {
     zone?: StringFieldUpdateOperationsInput | string
     status?: BoolFieldUpdateOperationsInput | boolean
     method?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AccessLogUncheckedUpdateInput = {
@@ -9065,6 +9087,7 @@ export namespace Prisma {
     zone?: StringFieldUpdateOperationsInput | string
     status?: BoolFieldUpdateOperationsInput | boolean
     method?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AccessLogCreateManyInput = {
@@ -9076,6 +9099,7 @@ export namespace Prisma {
     zone: string
     status: boolean
     method?: string
+    reason?: string | null
   }
 
   export type AccessLogUpdateManyMutationInput = {
@@ -9086,6 +9110,7 @@ export namespace Prisma {
     zone?: StringFieldUpdateOperationsInput | string
     status?: BoolFieldUpdateOperationsInput | boolean
     method?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AccessLogUncheckedUpdateManyInput = {
@@ -9097,6 +9122,7 @@ export namespace Prisma {
     zone?: StringFieldUpdateOperationsInput | string
     status?: BoolFieldUpdateOperationsInput | boolean
     method?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserRegistrationCreateInput = {
@@ -9594,6 +9620,7 @@ export namespace Prisma {
     zone?: SortOrder
     status?: SortOrder
     method?: SortOrder
+    reason?: SortOrder
   }
 
   export type AccessLogAvgOrderByAggregateInput = {
@@ -9609,6 +9636,7 @@ export namespace Prisma {
     zone?: SortOrder
     status?: SortOrder
     method?: SortOrder
+    reason?: SortOrder
   }
 
   export type AccessLogMinOrderByAggregateInput = {
@@ -9620,6 +9648,7 @@ export namespace Prisma {
     zone?: SortOrder
     status?: SortOrder
     method?: SortOrder
+    reason?: SortOrder
   }
 
   export type AccessLogSumOrderByAggregateInput = {
