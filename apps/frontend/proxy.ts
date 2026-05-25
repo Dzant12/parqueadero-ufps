@@ -50,8 +50,8 @@ export async function proxy(request: NextRequest) {
   const { role } = session as { role: string };
 
   if (role === "CELADOR") {
-    // Celador is ONLY allowed on the Dashboard (/) and Analytics (/analytics)
-    if (path !== "/" && path !== "/analytics") {
+    // Celador is ONLY allowed on the Dashboard (/) and Reports (/reports)
+    if (path !== "/" && path !== "/reports") {
       return NextResponse.redirect(new URL("/", request.url));
     }
   }
