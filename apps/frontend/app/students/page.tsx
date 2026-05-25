@@ -65,13 +65,8 @@ export default async function StudentsPage({
               : `${totalFilteredStudents.toLocaleString()} estudiantes con correo @ufps.edu.co registrados`}
           </p>
         </div>
-        <button className="btn btn-primary w-full sm:w-auto justify-center mt-4 sm:mt-0">
-          <span className="material-symbols-outlined text-sm">person_add</span>
-          Registrar Estudiante
-        </button>
       </div>
 
-      {/* Action Bar */}
       <div className="filter-bar">
         <form method="GET" action="/students" className="search-input-wrapper max-w-md">
           <span className="material-symbols-outlined search-icon">search</span>
@@ -83,10 +78,6 @@ export default async function StudentsPage({
             className="search-input"
           />
         </form>
-        <button className="btn btn-ghost">
-          <span className="material-symbols-outlined text-sm">filter_list</span>
-          Filtros
-        </button>
       </div>
 
       {/* Data Table */}
@@ -100,7 +91,6 @@ export default async function StudentsPage({
                 <th>Apellido</th>
                 <th>Correo Institucional</th>
                 <th>Vehículos Vinculados</th>
-                <th className="text-right">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -159,11 +149,7 @@ export default async function StudentsPage({
                             : "Ninguno"}
                         </span>
                       </td>
-                      <td className="table-cell text-right">
-                        <button className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-colors opacity-0 group-hover:opacity-100">
-                          <span className="material-symbols-outlined text-lg">edit</span>
-                        </button>
-                      </td>
+
                     </tr>
                   );
                 }

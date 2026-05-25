@@ -72,7 +72,6 @@ export default async function VehiclesPage({ searchParams }: PageProps) {
 
   return (
     <div className="page-wrapper space-y-8">
-      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-0">
         <div>
           <h2 className="page-title">Registro de Vehículos</h2>

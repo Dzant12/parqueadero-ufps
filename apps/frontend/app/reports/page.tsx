@@ -117,7 +117,6 @@ export default async function ReportsPage({
 
   const complianceStats = [
     { label: "Acceso Autorizado", value: `${authPct}%`, pct: Number(authPct), barColor: "bg-[var(--color-primary)]" },
-    { label: "Precisión de Reconocimiento de Placa", value: "99.5%", pct: 99.5, barColor: "bg-[var(--color-tertiary-container)]" },
   ];
 
   return (
@@ -210,21 +209,13 @@ export default async function ReportsPage({
       <div className="table-wrapper">
         <div className="px-6 py-4 border-b border-[var(--color-outline-variant)]/15 flex items-center justify-between">
           <h4 className="font-bold text-[var(--color-on-surface)] text-sm">Log de Actividad en Tiempo Real</h4>
-          <div className="flex items-center gap-4">
-            <button className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors">
-              <span className="material-symbols-outlined">filter_list</span>
-            </button>
-            <button className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-on-surface)] transition-colors">
-              <span className="material-symbols-outlined">more_vert</span>
-            </button>
-          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="table-base">
             <thead className="table-thead">
               <tr>
-                {["Marca de Tiempo", "Placa", "Tipo de Usuario", "Zona", "Estado", "Acción"].map((h, i) => (
-                  <th key={h} className={i === 5 ? "text-right" : ""}>{h}</th>
+                {["Marca de Tiempo", "Placa", "Tipo de Usuario", "Zona", "Estado"].map((h) => (
+                  <th key={h}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -254,16 +245,7 @@ export default async function ReportsPage({
                       </span>
                     </div>
                   </td>
-                  <td className="table-cell text-right">
-                    <button 
-                      className="text-[var(--color-outline-variant)] group-hover:text-[var(--color-primary)] transition-colors"
-                      title="Ver detalles"
-                    >
-                      <span className="material-symbols-outlined text-sm">
-                        {row.status ? "visibility" : "warning"}
-                      </span>
-                    </button>
-                  </td>
+
                 </tr>
               ))}
             </tbody>
@@ -350,7 +332,7 @@ export default async function ReportsPage({
           </div>
           <p className="text-xs text-[var(--color-on-surface-variant)] font-[var(--font-label)] leading-relaxed">
             La densidad de tráfico es actualmente un{" "}
-            <span className="font-bold text-[var(--color-on-surface)]">14% mayor</span> que el promedio móvil de 7 días para este intervalo de tiempo. Se sugiere monitorear la Zona B-4 para un posible desbordamiento.
+            <span className="font-bold text-[var(--color-on-surface)]">14% mayor</span> que el promedio móvil de 7 días para este intervalo de tiempo. Se sugiere monitorear el flujo vehicular durante las horas pico para evitar congestión en los accesos.
           </p>
         </div>
 
