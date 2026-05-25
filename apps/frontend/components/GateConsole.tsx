@@ -97,19 +97,7 @@ export default function GateConsole({ zone, lastPlate }: GateConsoleProps) {
         </div>
       </div>
 
-      {/* Footer Metrics */}
-      <div className="relative grid grid-cols-3 gap-4 pt-6 border-t border-white/5 z-10">
-        {[
-          { label: "LATENCIA", value: "14ms", color: "text-green-400" },
-          { label: "CONFIANZA", value: "98.4%", color: "text-blue-400" },
-          { label: "TRÁFICO/H", value: isExit ? "42" : "128", color: "text-white/60" }
-        ].map(stat => (
-          <div key={stat.label} className="flex flex-col gap-1">
-            <span className="text-[0.5rem] font-black text-white/30 tracking-widest">{stat.label}</span>
-            <span className={`text-xs font-bold ${stat.color}`}>{stat.value}</span>
-          </div>
-        ))}
-      </div>
+
 
       <style>{`
         @keyframes scan {

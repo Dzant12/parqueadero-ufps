@@ -8,51 +8,36 @@ export default function MonitoringQuickActions() {
   const handleAction = async (label: string) => {
     setLoading(label);
     
-    if (label === "Configurar Lector Único") {
-      try {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
-        const normalizedBackendUrl = backendUrl.replace(/\/$/, "");
+    try {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000";
+      const normalizedBackendUrl = backendUrl.replace(/\/$/, "");
 
-        // Primero obtenemos la zona actual
-        const configRes = await fetch(`${normalizedBackendUrl}/api/rfid/config`);
-        const configData = await configRes.json();
-        const zonaActual = configData.globalActiveZone ?? "Desconocida";
+      // Primero obtenemos la zona actual
+      const configRes = await fetch(`${normalizedBackendUrl}/api/rfid/config`);
+      const configData = await configRes.json();
+      const zonaActual = configData.globalActiveZone ?? "Desconocida";
 
-        // Luego hacemos el toggle
-        const res = await fetch(`${normalizedBackendUrl}/api/rfid/toggle-zone`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-        });
-        const data = await res.json();
-        const zonaNueva = data.newZone;
-        alert(
-          `📡 Zona cambiada\n\n` +
-          `Antes: ${zonaActual}\n` +
-          `Ahora: ${zonaNueva}\n\n` +
-          `El ESP32 sincronizará la nueva zona en los próximos 10 segundos.`
-        );
-      } catch (err) {
-        alert("❌ Error al comunicar con el servidor. Verifica que el backend esté activo.");
-      }
-      setLoading(null);
-      return;
+      // Luego hacemos el toggle
+      const res = await fetch(`${normalizedBackendUrl}/api/rfid/toggle-zone`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      const zonaNueva = data.newZone;
+      alert(
+        `📡 Zona cambiada\n\n` +
+        `Antes: ${zonaActual}\n` +
+        `Ahora: ${zonaNueva}\n\n` +
+        `El ESP32 sincronizará la nueva zona en los próximos 10 segundos.`
+      );
+    } catch {
+      alert("❌ Error al comunicar con el servidor. Verifica que el backend esté activo.");
     }
-
-    // Simulate action
-    setTimeout(() => {
-      setLoading(null);
-      if (label === "Registrar Incidente") {
-        alert("🚨 Módulo de Incidentes: Se ha notificado a la central de seguridad. Por favor, complete el reporte en la sección de Reportes.");
-      } else if (label === "Contactar Administrador") {
-        window.location.href = "mailto:admin@parqueadero-ufps.edu.co?subject=Asistencia en Punto de Control";
-      }
-    }, 800);
+    setLoading(null);
   };
 
   const actions = [
     { icon: "settings_input_antenna", label: "Configurar Lector Único", color: "text-[var(--color-primary)]", bg: "hover:bg-[var(--color-primary-container)]/10" },
-    { icon: "report", label: "Registrar Incidente", color: "text-[var(--color-error)]", bg: "hover:bg-red-50" },
-    { icon: "support_agent", label: "Contactar Administrador", color: "text-[var(--color-tertiary)]", bg: "hover:bg-blue-50" },
   ];
 
   return (

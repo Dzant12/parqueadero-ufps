@@ -210,29 +210,7 @@ export default async function MonitoringPage({ searchParams }: Props) {
           {/* Quick Actions */}
           <MonitoringQuickActions />
 
-          {/* Zone Occupancy */}
-          <div className="card-padded">
-            <h4 className="text-[0.7rem] font-black text-[var(--color-on-surface-variant)] tracking-widest uppercase mb-4">
-              Capacidad de Estacionamiento
-            </h4>
-            <div className="space-y-4">
-              {[
-                { label: "Zona A - Facultad", pct: 82 },
-                { label: "Zona B - Estudiantes", pct: 64 },
-                { label: "Zona C - Visitantes", pct: 28 },
-              ].map((zone) => (
-                <div key={zone.label}>
-                  <div className="flex justify-between text-[0.65rem] font-bold mb-1.5">
-                    <span className="text-[var(--color-on-surface)]">{zone.label}</span>
-                    <span className={zone.pct > 80 ? "text-red-500" : "text-[var(--color-primary)]"}>{zone.pct}%</span>
-                  </div>
-                  <div className="w-full bg-[var(--color-surface-container-high)] h-1.5 rounded-full overflow-hidden">
-                    <div className={`${zone.pct > 80 ? "bg-red-500" : "bg-[var(--color-primary)]"} h-full transition-all`} style={{ width: `${zone.pct}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+
         </div>
       </div>
     </div>

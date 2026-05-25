@@ -35,7 +35,7 @@ const router = Router();
 router.get("/", async (req: Request, res: Response) => {
   const logs = [];
   const userTypes = ["Estudiante", "Administrativo", "Docente", "Visitante", "Desconocido"];
-  const zones = ["Zona A - Principal", "Zona B - Visitantes", "Zona C - VIP"];
+  const zones = ["Entrada Principal", "Salida Principal"];
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   
   const now = new Date();

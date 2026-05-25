@@ -306,25 +306,9 @@ export default async function AnalyticsPage({ searchParams }: Props) {
   });
 
   // ----------------------------------------------------------------------------
-  // 5. Procesamiento de Log de Auditoría y Distribución de Zonas
+  // 5. Procesamiento de Log de Auditoría
   // ----------------------------------------------------------------------------
   const auditLogs = logs.slice(0, 4);
-
-  const zoneDistribution = logs.reduce((acc: Record<string, number>, log) => {
-    acc[log.zone] = (acc[log.zone] || 0) + 1;
-    return acc;
-  }, {});
-
-  const totalZoneLogs = logs.length || 1;
-  const zonesList = Object.entries(zoneDistribution).map(([name, count]) => {
-    const pct = Math.round((count / totalZoneLogs) * 100);
-    return {
-      name,
-      pct,
-      status: pct > 75 ? "Ocupación Alta" : pct > 40 ? "Ocupación Media" : "Ocupación Baja",
-      cls: pct > 75 ? "badge-error" : pct > 40 ? "badge-warning" : "badge-success"
-    };
-  }).sort((a, b) => b.pct - a.pct).slice(0, 4);
 
   return (
     <div className="page-wrapper space-y-8">
@@ -576,9 +560,9 @@ export default async function AnalyticsPage({ searchParams }: Props) {
           </div>
 
           {/* Lower Detail Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="w-full">
             {/* Dynamic Audit Log */}
-            <div className="col-span-1 md:col-span-2 card-padded flex flex-col justify-between">
+            <div className="card-padded flex flex-col justify-between">
               <div>
                 <h3 className="font-[var(--font-headline)] font-extrabold text-[var(--color-on-surface)] mb-4">Log de Auditoría de Accesos</h3>
                 <div className="space-y-1.5">
@@ -623,33 +607,6 @@ export default async function AnalyticsPage({ searchParams }: Props) {
                   ) : (
                     <p className="text-xs italic text-[var(--color-on-surface-variant)] py-4 text-center">No hay registros de auditoría recientes.</p>
                   )}
-                </div>
-              </div>
-            </div>
-
-            {/* Zone Distribution */}
-            <div className="card overflow-hidden relative group">
-              <img
-                className="absolute inset-0 w-full h-full object-cover opacity-20 grayscale"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlptLvH73sWKcRhNuVqohWf8h1PZeMQI_Db317ARTYS7txZ5KNzE9Oefb0xoXJRp-lovE9uc556ddvsog_xLxTdh_Md4Go-awPgjR70-Ogi9nk1p6pbRIyLxnYakxTVGk-UjILQX0nqhI73HbwRGpp-LpHTVVgZXbj96-WDOKqkYjIi1p2dFunvMlMgsxaW7gCutr3VR4H3Dtiyr3uoK8CcokCZn8K_xeipwV4YMmXhvamtgKyDh5fSgQHyb_zT1zaDDm7j2fYLykF"
-                alt="Campus map"
-              />
-              <div className="relative z-10 p-6 h-full flex flex-col justify-between">
-                <div>
-                  <h3 className="font-[var(--font-headline)] font-extrabold text-[var(--color-on-surface)] mb-1">Distribución por Zonas</h3>
-                  <p className="font-[var(--font-label)] text-[0.65rem] text-[var(--color-on-surface-variant)] mb-5">Porcentaje de tráfico capturado por portón</p>
-                  <div className="space-y-3">
-                    {zonesList.length > 0 ? (
-                      zonesList.map((zone) => (
-                        <div key={zone.name} className="flex justify-between items-center text-[0.65rem] font-[var(--font-label)]">
-                          <span className="font-bold text-[var(--color-on-surface)] truncate w-32">{zone.name}</span>
-                          <span className={`badge ${zone.cls} text-[0.55rem] font-bold`}>{zone.pct}% Tránsito</span>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-[0.65rem] italic text-[var(--color-on-surface-variant)] py-4">Sin datos de zonas en el período.</p>
-                    )}
-                  </div>
                 </div>
               </div>
             </div>

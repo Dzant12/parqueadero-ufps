@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 interface TopBarProps {
   onToggleSidebar?: () => void;
 }
@@ -21,35 +19,21 @@ export default function TopBar({ onToggleSidebar }: TopBarProps) {
         <div className="flex items-center gap-3 text-[var(--color-primary)]">
           <span className="material-symbols-outlined">local_parking</span>
           <span className="font-[var(--font-headline)] font-bold text-[var(--color-on-surface)] tracking-tight text-sm md:text-base">
-            Mapa de Zonas
+            UFPS Parking
           </span>
-        </div>
-        <div className="hidden sm:flex items-center gap-3 text-[var(--color-on-surface-variant)] font-[var(--font-label)] text-[0.875rem] hover:text-[var(--color-on-surface)] cursor-pointer transition-all">
-          <span className="material-symbols-outlined">gate</span>
-          <span className="hidden md:inline">Control de Portón</span>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 md:gap-6">
-        <div className="hidden xs:flex items-center gap-2 px-3 py-1.5 bg-[var(--color-error-container)]/40 text-[var(--color-on-error-container)] rounded-full text-[0.75rem] font-bold">
-          <span className="w-2 h-2 bg-[var(--color-error)] rounded-full animate-pulse" />
-          <span className="hidden sm:inline">Nueva Alerta</span>
-        </div>
-        <div className="hidden md:block text-[0.75rem] font-[var(--font-label)] text-[var(--color-on-surface-variant)]">
-          Estado del Sistema:{" "}
-          <span className="text-[var(--color-primary)] font-bold">Operativo</span>
-        </div>
-        <div className="flex items-center gap-3 md:gap-4 border-l border-[var(--color-outline-variant)]/30 pl-4 md:pl-6">
-          <button className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-all">
-            <span className="material-symbols-outlined">notifications</span>
-          </button>
-          <div className="flex items-center gap-2">
-            <img
-              alt="Administrator Avatar"
-              className="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-[var(--color-outline-variant)]/30"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqrra-PZI-FS2wPTUcB6vHdFkHftRCe4_ms0RaEe5FeLEyWkDZtnvnukYX6jn9CjcRJPOGcITiouOE6eKUvV6L8gRv3rO6sfN4Vr09rVtwj0_eiaklVPtrbjA-7pFmAYXlbgND7zs8FdHJ7tPdEFRR1VXBNq7KiBMMdMkaTSpyprwbwOCCaTiEYvYlShGUMRT390Ylh-waG4TSGa6CNw7scZbtnS-FQVUzl-69o43Jdu7sdjWyens8blol-JGOrT7tAk5vj5m0hyL-"
-            />
-          </div>
+      <div className="flex items-center gap-3 md:gap-4">
+        <button className="text-[var(--color-on-surface-variant)] hover:text-[var(--color-primary)] transition-all">
+          <span className="material-symbols-outlined">notifications</span>
+        </button>
+        <div className="flex items-center gap-2">
+          <img
+            alt="Administrator Avatar"
+            className="w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border border-[var(--color-outline-variant)]/30"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqrra-PZI-FS2wPTUcB6vHdFkHftRCe4_ms0RaEe5FeLEyWkDZtnvnukYX6jn9CjcRJPOGcITiouOE6eKUvV6L8gRv3rO6sfN4Vr09rVtwj0_eiaklVPtrbjA-7pFmAYXlbgND7zs8FdHJ7tPdEFRR1VXBNq7KiBMMdMkaTSpyprwbwOCCaTiEYvYlShGUMRT390Ylh-waG4TSGa6CNw7scZbtnS-FQVUzl-69o43Jdu7sdjWyens8blol-JGOrT7tAk5vj5m0hyL-"
+          />
         </div>
       </div>
     </header>

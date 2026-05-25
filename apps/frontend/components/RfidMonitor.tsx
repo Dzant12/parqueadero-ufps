@@ -257,9 +257,7 @@ export default function RfidMonitor({ zone }: { zone: string }) {
                     value={`${event.vehicleBrand} ${event.vehicleModel ?? ""}`.trim()}
                   />
                 )}
-                {event.vehicleColor && (
-                  <InfoRow icon="palette" label="Color" value={event.vehicleColor} />
-                )}
+
                 {event.department && (
                   <InfoRow icon="domain" label="Departamento" value={event.department} />
                 )}
