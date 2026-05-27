@@ -39,7 +39,7 @@ export default function Sidebar({ user, onClose }: SidebarProps) {
 
   // Filter items based on role
   const filteredNavItems = user?.role === "CELADOR" 
-    ? navItems.filter(item => item.href === "/")
+    ? navItems.filter(item => item.href === "/" || item.href === "/reports")
     : navItems;
 
   return (
