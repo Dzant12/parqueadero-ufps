@@ -10,6 +10,7 @@ import prisma from "@parqueadero/database";
 import TableExportButton from "@/components/TableExportButton";
 import Link from "next/link";
 import FormattedTime from "@/components/FormattedTime";
+import CarnetPreview from "@/components/CarnetPreview";
 
 export default async function ReportsPage({
   searchParams
@@ -62,6 +63,87 @@ export default async function ReportsPage({
     take: pageSize,
     skip: (currentPage - 1) * pageSize,
   });
+
+  const activityLogsWithCarnet = await Promise.all(
+    activityLogs.map(async (row) => {
+      let carnetUrl: string | null = null;
+      let ownerName = "Desconocido";
+
+      if (row.plate && row.plate !== "UNKNOWN") {
+        // 1. Members (Vehicle + Student)
+        const vehicle = await prisma.vehicle.findUnique({
+          where: { plate: row.plate },
+          include: { owner: true }
+        });
+
+        if (vehicle) {
+          if (vehicle.owner) {
+            ownerName = `${vehicle.owner.firstname} ${vehicle.owner.surname}`.trim();
+            const reg = await prisma.userRegistration.findFirst({
+              where: {
+                OR: [
+                  { institutionalCode: vehicle.owner.cardnumber },
+                  { plate: vehicle.plate }
+                ],
+                status: "APROBADO"
+              },
+              orderBy: { createdAt: "desc" }
+            });
+            if (reg) {
+              carnetUrl = reg.carnetFilePath;
+            }
+          }
+          if (!carnetUrl) {
+            const reg = await prisma.userRegistration.findFirst({
+              where: { plate: vehicle.plate },
+              orderBy: { createdAt: "desc" }
+            });
+            if (reg) {
+              carnetUrl = reg.carnetFilePath;
+            }
+          }
+        }
+
+        // 2. Visitors
+        if (!carnetUrl) {
+          const guestRequest = await prisma.accessRequest.findFirst({
+            where: {
+              plateNumber: row.plate,
+              status: "APPROVED"
+            },
+            orderBy: { visitDate: "desc" }
+          });
+
+          if (guestRequest) {
+            ownerName = guestRequest.requesterName;
+            carnetUrl = guestRequest.hostCarnetPath;
+          }
+        }
+
+        // 3. User Registration
+        if (!carnetUrl) {
+          const registration = await prisma.userRegistration.findFirst({
+            where: {
+              plate: row.plate,
+              status: "APROBADO"
+            },
+            orderBy: { createdAt: "desc" }
+          });
+
+          if (registration) {
+            ownerName = registration.fullName;
+            carnetUrl = registration.carnetFilePath;
+          }
+        }
+      }
+
+      return {
+        ...row,
+        carnetUrl,
+        ownerName
+      };
+    })
+  );
 
   const totalFilteredLogs = await prisma.accessLog.count({ where: whereClause });
   const totalPages = Math.ceil(totalFilteredLogs / pageSize) || 1;
@@ -167,7 +249,7 @@ export default async function ReportsPage({
           </form>
           <div className="flex gap-2 w-full sm:w-auto">
             <TableExportButton 
-              data={activityLogs} 
+              data={activityLogsWithCarnet} 
               filename={`reporte_estacionamiento_${zoneQuery || 'total'}`} 
             />
           </div>
@@ -214,13 +296,13 @@ export default async function ReportsPage({
           <table className="table-base">
             <thead className="table-thead">
               <tr>
-                {["Marca de Tiempo", "Placa", "Tipo de Usuario", "Zona", "Estado", "Motivo"].map((h) => (
+                {["Marca de Tiempo", "Placa", "Tipo de Usuario", "Zona", "Estado", "Motivo", "Carné"].map((h) => (
                   <th key={h}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {activityLogs.map((row: { id: number; plate: string; timestamp: Date; zone: string; status: boolean; userType: string; reason?: string | null }) => (
+              {activityLogsWithCarnet.map((row: { id: number; plate: string; timestamp: Date; zone: string; status: boolean; userType: string; reason?: string | null; carnetUrl: string | null; ownerName: string }) => (
                 <tr key={row.id} className="table-row group">
                   <td className="table-cell">
                     <div className="flex flex-col">
@@ -249,6 +331,13 @@ export default async function ReportsPage({
                     <span className="text-xs text-[var(--color-on-surface-variant)] font-medium max-w-[200px] truncate block" title={row.reason || ""}>
                       {row.reason || "-"}
                     </span>
+                  </td>
+                  <td className="table-cell">
+                    <CarnetPreview
+                      carnetUrl={row.carnetUrl}
+                      ownerName={row.ownerName}
+                      plate={row.plate}
+                    />
                   </td>
                 </tr>
               ))}
