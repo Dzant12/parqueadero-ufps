@@ -296,7 +296,7 @@ export default async function ReportsPage({
           <table className="table-base">
             <thead className="table-thead">
               <tr>
-                {["Marca de Tiempo", "Placa", "Tipo de Usuario", "Zona", "Estado", "Motivo", "Carné"].map((h) => (
+                {["Marca de Tiempo", "Placa", "Nombre", "Tipo de Usuario", "Zona", "Estado", "Motivo", "Carné"].map((h) => (
                   <th key={h}>{h}</th>
                 ))}
               </tr>
@@ -312,6 +312,9 @@ export default async function ReportsPage({
                   </td>
                   <td className="table-cell">
                     <span className="text-sm font-mono font-bold px-2 py-1 rounded bg-[var(--color-surface-container-high)] text-[var(--color-on-surface)]">{row.plate}</span>
+                  </td>
+                  <td className="table-cell">
+                    <span className="text-sm font-semibold text-[var(--color-on-surface)]">{row.ownerName}</span>
                   </td>
                   <td className="table-cell">
                     <span className={`badge ${getUserTypeCls(row.userType)}`}>{row.userType}</span>
