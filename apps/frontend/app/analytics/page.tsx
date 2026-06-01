@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: "Métricas de flujo y capacidad en tiempo real para el estacionamiento del campus",
 };
 
-import prisma from "@parqueadero/database";
+import prisma, { Prisma } from "@parqueadero/database";
 import AnalyticsFilters from "@/components/AnalyticsFilters";
 import SeedButton from "@/components/SeedButton";
 
@@ -14,11 +14,14 @@ interface Props {
   searchParams: Promise<{
     period?: string;
     userType?: string;
+    days?: string;
+    dateFrom?: string;
+    dateTo?: string;
   }>;
 }
 
 export default async function AnalyticsPage({ searchParams }: Props) {
-  const { period = "hoy", userType = "all" } = await searchParams;
+  const { period = "hoy", userType = "all", days, dateFrom, dateTo } = await searchParams;
 
   // ----------------------------------------------------------------------------
   // 1. Cálculos de fechas en la Zona Horaria de Colombia (America/Bogota, UTC-5)
@@ -76,6 +79,23 @@ export default async function AnalyticsPage({ searchParams }: Props) {
     startDate = monthStart;
     endDate = monthEnd;
     periodLabel = "Este Mes";
+  } else if (period === "dias" && days) {
+    const numDays = Math.min(Math.max(parseInt(days, 10) || 7, 1), 365);
+    startDate = new Date(todayStart.getTime() - (numDays - 1) * 24 * 60 * 60 * 1000);
+    endDate = todayEnd;
+    periodLabel = `Últimos ${numDays} Días`;
+  } else if (period === "fecha" && dateFrom) {
+    startDate = new Date(`${dateFrom}T00:00:00.000-05:00`);
+    const effectiveTo = dateTo && dateTo >= dateFrom ? dateTo : dateFrom;
+    endDate = new Date(`${effectiveTo}T23:59:59.999-05:00`);
+    // Etiqueta del rango
+    const fmt = (d: string) => {
+      const [fy, fm, fd] = d.split("-");
+      return `${fd}/${fm}/${fy}`;
+    };
+    periodLabel = effectiveTo !== dateFrom
+      ? `${fmt(dateFrom)} – ${fmt(effectiveTo)}`
+      : fmt(dateFrom);
   }
 
   // Mapeo semántico de los filtros del selector de usuario
@@ -91,7 +111,7 @@ export default async function AnalyticsPage({ searchParams }: Props) {
   }
 
   // Cláusula de filtrado de base de datos
-  const whereClause: any = {
+  const whereClause: Prisma.AccessLogWhereInput = {
     timestamp: {
       gte: startDate,
       lte: endDate,
@@ -320,7 +340,13 @@ export default async function AnalyticsPage({ searchParams }: Props) {
             Métricas de control de acceso e ingresos • Filtro Activo: <span className="font-bold text-[var(--color-primary)]">{periodLabel.toUpperCase()}</span>
           </p>
         </div>
-        <AnalyticsFilters currentPeriod={period} currentUserType={userType} />
+        <AnalyticsFilters
+          currentPeriod={period}
+          currentUserType={userType}
+          currentDays={days}
+          currentDateFrom={dateFrom}
+          currentDateTo={dateTo}
+        />
       </div>
 
       {/* Metric Cards */}
