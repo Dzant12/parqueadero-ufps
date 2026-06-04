@@ -7,16 +7,20 @@ interface FormattedTimeProps {
 }
 
 /**
- * Componente optimizado para mostrar fechas/horas formateadas en el cliente.
- * Utiliza 'suppressHydrationWarning' para evitar renders en cascada y errores de hidratación,
- * asegurando que se use la zona horaria del navegador del usuario sin penalización de rendimiento.
+ * Muestra fechas/horas siempre en la zona horaria de Bogotá (UTC-5),
+ * independientemente del timezone del servidor o del navegador del usuario.
+ * suppressHydrationWarning evita errores de hidratación entre SSR y cliente.
  */
 export default function FormattedTime({ date, className, showDate = false }: FormattedTimeProps) {
   const d = new Date(date);
-  
-  const formatted = showDate 
-    ? `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-    : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  const TZ = "America/Bogota";
+
+  const formatted = showDate
+    ? d.toLocaleDateString("es-CO", { timeZone: TZ, day: "2-digit", month: "2-digit", year: "numeric" }) +
+      " " +
+      d.toLocaleTimeString("es-CO", { timeZone: TZ, hour: "2-digit", minute: "2-digit" })
+    : d.toLocaleTimeString("es-CO", { timeZone: TZ, hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
   return (
     <span className={className} suppressHydrationWarning>
