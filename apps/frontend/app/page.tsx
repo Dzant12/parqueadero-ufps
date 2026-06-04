@@ -122,7 +122,7 @@ export default async function MonitoringPage({ searchParams }: Props) {
               </h3>
               <div className="flex items-center gap-4">
                 <span className="text-[0.65rem] font-bold text-[var(--color-on-surface-variant)]">FILTRADO POR: {activeZone.toUpperCase()}</span>
-                <TableExportButton data={recentActivity} filename={`log_${tab}`} />
+                <TableExportButton filename={`log_${tab}`} filters={{ zone: isExit ? "Salida" : "Entrada" }} />
               </div>
             </div>
             <div className="overflow-x-auto">
