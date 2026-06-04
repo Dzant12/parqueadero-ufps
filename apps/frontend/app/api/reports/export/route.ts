@@ -6,16 +6,10 @@ export const dynamic = "force-dynamic";
 
 // ---------------------------------------------------------------------------
 // Obtiene la hora en Bogotá (0-23) a partir de un Date UTC
+// Colombia es siempre UTC-5, sin horario de verano → aritmética directa
 // ---------------------------------------------------------------------------
 function getBogotaHour(date: Date): number {
-  const raw = parseInt(
-    new Intl.DateTimeFormat("en-US", {
-      hour: "numeric",
-      hour12: false,
-      timeZone: "America/Bogota",
-    }).format(date)
-  );
-  return raw === 24 ? 0 : raw;
+  return new Date(date.getTime() - 5 * 60 * 60 * 1000).getUTCHours();
 }
 
 // ---------------------------------------------------------------------------
