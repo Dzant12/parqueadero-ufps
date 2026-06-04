@@ -12,19 +12,21 @@
   "dependencies": {
     "@parqueadero/database": "workspace:*",
     "@prisma/adapter-pg": "^7.7.0",
+    "@swc/helpers": "^0.5.15",
     "@types/bcryptjs": "^3.0.0",
     "@types/nodemailer": "^8.0.0",
     "@vercel/blob": "^2.3.3",
     "@xyflow/react": "^12.10.2",
     "bcryptjs": "^3.0.3",
     "jose": "^6.2.2",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "next": "16.2.3",
     "nodemailer": "^8.0.5",
     "pg": "^8.20.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "resend": "^6.12.2",
-    "@swc/helpers": "^0.5.15",
     "scheduler": "^0.27.0"
   },
   "devDependencies": {
