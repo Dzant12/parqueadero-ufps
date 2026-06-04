@@ -101,71 +101,79 @@ export default async function ReportsPage({
 
   // -------------------------------------------------------------------------
   // Enriquecer la página actual con nombre de propietario + URL de carné
+  // Batch approach: 4 queries totales en lugar de N×4 queries concurrentes
   // -------------------------------------------------------------------------
-  const activityLogsWithCarnet = await Promise.all(
-    activityLogs.map(async (row: AccessLog) => {
-      let carnetUrl: string | null = null;
-      let ownerName = "Desconocido";
+  const pagePlates = [...new Set(
+    activityLogs.map((r: AccessLog) => r.plate).filter((p) => p && p !== "UNKNOWN")
+  )];
 
-      if (row.plate && row.plate !== "UNKNOWN") {
-        // 1. Miembros (Vehículo + Estudiante)
-        const vehicle = await prisma.vehicle.findUnique({
-          where: { plate: row.plate },
-          include: { owner: true },
-        });
+  const [pageVehicles, pageAccessReqs, pageUserRegs] = await Promise.all([
+    prisma.vehicle.findMany({
+      where: { plate: { in: pagePlates } },
+      include: { owner: true },
+    }),
+    prisma.accessRequest.findMany({
+      where: { plateNumber: { in: pagePlates }, status: "APPROVED" },
+      orderBy: { visitDate: "desc" },
+    }),
+    prisma.userRegistration.findMany({
+      where: { plate: { in: pagePlates }, status: "APROBADO" },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
-        if (vehicle) {
-          if (vehicle.owner) {
-            ownerName = `${vehicle.owner.firstname} ${vehicle.owner.surname}`.trim();
-            const reg = await prisma.userRegistration.findFirst({
-              where: {
-                OR: [
-                  { institutionalCode: vehicle.owner.cardnumber },
-                  { plate: vehicle.plate },
-                ],
-                status: "APROBADO",
-              },
-              orderBy: { createdAt: "desc" },
-            });
-            if (reg) carnetUrl = reg.carnetFilePath;
-          }
-          if (!carnetUrl) {
-            const reg = await prisma.userRegistration.findFirst({
-              where: { plate: vehicle.plate },
-              orderBy: { createdAt: "desc" },
-            });
-            if (reg) carnetUrl = reg.carnetFilePath;
-          }
-        }
+  // Cardnumbers de propietarios para buscar carné por código institucional
+  const ownerCardnumbers = pageVehicles
+    .filter((v) => v.owner?.cardnumber)
+    .map((v) => v.owner!.cardnumber!);
 
-        // 2. Visitantes
-        if (!carnetUrl) {
-          const guestRequest = await prisma.accessRequest.findFirst({
-            where: { plateNumber: row.plate, status: "APPROVED" },
-            orderBy: { visitDate: "desc" },
-          });
-          if (guestRequest) {
-            ownerName = guestRequest.requesterName;
-            carnetUrl = guestRequest.hostCarnetPath;
-          }
-        }
+  const ownerRegs = ownerCardnumbers.length > 0
+    ? await prisma.userRegistration.findMany({
+        where: { institutionalCode: { in: ownerCardnumbers }, status: "APROBADO" },
+        orderBy: { createdAt: "desc" },
+      })
+    : [];
 
-        // 3. Registro de usuario
-        if (!carnetUrl) {
-          const registration = await prisma.userRegistration.findFirst({
-            where: { plate: row.plate, status: "APROBADO" },
-            orderBy: { createdAt: "desc" },
-          });
-          if (registration) {
-            ownerName = registration.fullName;
-            carnetUrl = registration.carnetFilePath;
-          }
-        }
+  // Mapas de búsqueda O(1)
+  const vehicleMap   = new Map(pageVehicles.map((v) => [v.plate, v]));
+  const accessReqMap = new Map<string, typeof pageAccessReqs[0]>();
+  pageAccessReqs.forEach((r) => { if (!accessReqMap.has(r.plateNumber)) accessReqMap.set(r.plateNumber, r); });
+  const userRegByPlate = new Map<string, typeof pageUserRegs[0]>();
+  pageUserRegs.forEach((r) => { if (r.plate && !userRegByPlate.has(r.plate)) userRegByPlate.set(r.plate, r); });
+  const ownerRegByCode = new Map<string, typeof ownerRegs[0]>();
+  ownerRegs.forEach((r) => { if (r.institutionalCode && !ownerRegByCode.has(r.institutionalCode)) ownerRegByCode.set(r.institutionalCode, r); });
+
+  const activityLogsWithCarnet = activityLogs.map((row: AccessLog) => {
+    let carnetUrl: string | null = null;
+    let ownerName = "Desconocido";
+
+    if (row.plate && row.plate !== "UNKNOWN") {
+      const vehicle = vehicleMap.get(row.plate);
+
+      if (vehicle?.owner) {
+        ownerName = `${vehicle.owner.firstname} ${vehicle.owner.surname}`.trim();
+        const reg = ownerRegByCode.get(vehicle.owner.cardnumber!) ?? userRegByPlate.get(row.plate);
+        if (reg) carnetUrl = reg.carnetFilePath;
       }
 
-      return { ...row, carnetUrl, ownerName };
-    })
-  );
+      if (!carnetUrl) {
+        const reg = userRegByPlate.get(row.plate);
+        if (reg) carnetUrl = reg.carnetFilePath;
+      }
+
+      if (!carnetUrl) {
+        const accessReq = accessReqMap.get(row.plate);
+        if (accessReq) {
+          if (ownerName === "Desconocido") ownerName = accessReq.requesterName;
+          carnetUrl = accessReq.hostCarnetPath;
+        }
+      }
+    }
+
+    return { ...row, carnetUrl, ownerName };
+  });
+
+
 
   // -------------------------------------------------------------------------
   // Métricas de resumen (sobre registros filtrados por turno)

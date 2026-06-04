@@ -72,50 +72,78 @@ export async function GET(request: NextRequest) {
       : logs;
 
   // -------------------------------------------------------------------------
-  // Enriquecer con nombre del propietario
+  // Enriquecer con nombre del propietario — batch (4 queries totales)
   // -------------------------------------------------------------------------
-  const enriched = await Promise.all(
-    filteredLogs.map(async (row: AccessLog) => {
-      let ownerName = "Desconocido";
+  const plates = [...new Set(
+    filteredLogs.map((r: AccessLog) => r.plate).filter((p) => p && p !== "UNKNOWN")
+  )];
 
-      if (row.plate && row.plate !== "UNKNOWN") {
-        const vehicle = await prisma.vehicle.findUnique({
-          where: { plate: row.plate },
-          include: { owner: true },
-        });
+  const [batchVehicles, batchAccessReqs, batchUserRegs] = await Promise.all([
+    prisma.vehicle.findMany({
+      where: { plate: { in: plates } },
+      include: { owner: true },
+    }),
+    prisma.accessRequest.findMany({
+      where: { plateNumber: { in: plates }, status: "APPROVED" },
+      orderBy: { visitDate: "desc" },
+    }),
+    prisma.userRegistration.findMany({
+      where: { plate: { in: plates }, status: "APROBADO" },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
-        if (vehicle?.owner) {
-          ownerName = `${vehicle.owner.firstname} ${vehicle.owner.surname}`.trim();
+  const cardnumbers = batchVehicles
+    .filter((v) => v.owner?.cardnumber)
+    .map((v) => v.owner!.cardnumber!);
+
+  const ownerRegs = cardnumbers.length > 0
+    ? await prisma.userRegistration.findMany({
+        where: { institutionalCode: { in: cardnumbers }, status: "APROBADO" },
+        orderBy: { createdAt: "desc" },
+      })
+    : [];
+
+  // Mapas O(1)
+  const vehicleMap    = new Map(batchVehicles.map((v) => [v.plate, v]));
+  const accessReqMap  = new Map<string, typeof batchAccessReqs[0]>();
+  batchAccessReqs.forEach((r) => { if (!accessReqMap.has(r.plateNumber)) accessReqMap.set(r.plateNumber, r); });
+  const userRegByPlate = new Map<string, typeof batchUserRegs[0]>();
+  batchUserRegs.forEach((r) => { if (r.plate && !userRegByPlate.has(r.plate)) userRegByPlate.set(r.plate, r); });
+  const ownerRegByCode = new Map<string, typeof ownerRegs[0]>();
+  ownerRegs.forEach((r) => { if (r.institutionalCode && !ownerRegByCode.has(r.institutionalCode)) ownerRegByCode.set(r.institutionalCode, r); });
+
+  const enriched = filteredLogs.map((row: AccessLog) => {
+    let ownerName = "Desconocido";
+
+    if (row.plate && row.plate !== "UNKNOWN") {
+      const vehicle = vehicleMap.get(row.plate);
+
+      if (vehicle?.owner) {
+        ownerName = `${vehicle.owner.firstname} ${vehicle.owner.surname}`.trim();
+      } else {
+        const accessReq = accessReqMap.get(row.plate);
+        if (accessReq) {
+          ownerName = accessReq.requesterName;
         } else {
-          const guestRequest = await prisma.accessRequest.findFirst({
-            where: { plateNumber: row.plate, status: "APPROVED" },
-            orderBy: { visitDate: "desc" },
-          });
-          if (guestRequest) {
-            ownerName = guestRequest.requesterName;
-          } else {
-            const reg = await prisma.userRegistration.findFirst({
-              where: { plate: row.plate, status: "APROBADO" },
-              orderBy: { createdAt: "desc" },
-            });
-            if (reg) ownerName = reg.fullName;
-          }
+          const reg = userRegByPlate.get(row.plate);
+          if (reg) ownerName = reg.fullName;
         }
       }
+    }
 
-      return {
-        id:        row.id,
-        timestamp: row.timestamp.toISOString(),
-        plate:     row.plate,
-        ownerName,
-        userType:  row.userType || "",
-        zone:      row.zone,
-        status:    row.status ? "PERMITIDO" : "DENEGADO",
-        reason:    row.reason || "",
-        method:    row.method || "MANUAL",
-      };
-    })
-  );
+    return {
+      id:        row.id,
+      timestamp: row.timestamp.toISOString(),
+      plate:     row.plate,
+      ownerName,
+      userType:  row.userType || "",
+      zone:      row.zone,
+      status:    row.status ? "PERMITIDO" : "DENEGADO",
+      reason:    row.reason || "",
+      method:    row.method || "MANUAL",
+    };
+  });
 
   return NextResponse.json(enriched);
 }

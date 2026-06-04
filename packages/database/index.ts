@@ -26,7 +26,12 @@ dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 // Configuración del Pool de conexiones de PostgreSQL.
 // Utiliza la variable de entorno DATABASE_URL cargada previamente.
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  max: 3,                    // Máximo de conexiones simultáneas (conservative para Supabase/Neon)
+  idleTimeoutMillis: 30000,  // Cerrar conexiones inactivas tras 30 s
+  connectionTimeoutMillis: 5000, // Error si no hay conexión libre en 5 s
+});
 
 // Inicialización del adaptador Pg nativo para Prisma.
 // Esto permite delegar y optimizar la gestión del pool de conexiones al módulo 'pg' de Node.js.
