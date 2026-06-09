@@ -234,8 +234,9 @@ export default function AnalyticsFilters({
       >
         <option value="all">Todos los Tipos de Usuario</option>
         <option value="Estudiante">Estudiante</option>
-        <option value="Facultad">Facultad (Docentes)</option>
-        <option value="Personal">Personal (Administrativos)</option>
+        <option value="Docente">Docente</option>
+        <option value="Administrativo">Administrativo</option>
+        <option value="Personal">Personal</option>
         <option value="Visitante">Visitante</option>
         <option value="Desconocido">Desconocido</option>
       </select>

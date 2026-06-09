@@ -111,9 +111,20 @@ export async function verifyPlate(plate: string, zone?: string) {
         }
       }
       
+      // Resolución del tipo real a partir del userType del propietario o del vehículo
+      let resolvedType = "Personal";
+      const ownerType = vehicle.owner?.userType?.trim().toLowerCase();
+      if (ownerType) {
+        if (ownerType.includes("estudiante")) resolvedType = "Estudiante";
+        else if (ownerType.includes("docente") || ownerType.includes("facultad") || ownerType.includes("profesor")) resolvedType = "Docente";
+        else if (ownerType.includes("admin") || ownerType.includes("personal") || ownerType.includes("administrativo")) resolvedType = "Administrativo";
+      } else if (vehicle.department === "Visitante Temporal") {
+        resolvedType = "Visitante";
+      }
+
       return { 
         status: "authorized", 
-        type: "Estudiante/Personal", 
+        type: resolvedType, 
         ownerName: vehicle.owner ? `${vehicle.owner.firstname} ${vehicle.owner.surname}` : "Desconocido",
         carnetUrl
       };

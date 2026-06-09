@@ -24,6 +24,34 @@
 import { Router, Request, Response } from "express";
 import prisma from "@parqueadero/database";
 
+/**
+ * Resuelve el tipo de usuario canónico para la bitácora a partir de los datos del vehículo.
+ * Usa en cascada: (1) userType del propietario en Student, (2) inferencia por department,
+ * (3) fallback genérico "Personal" si no hay información suficiente.
+ *
+ * @param vehicle - El vehículo con su relación `owner` incluida.
+ * @returns Etiqueta normalizada: "Estudiante" | "Docente" | "Administrativo" | "Visitante" | "Personal"
+ */
+function resolveUserType(vehicle: { department: string; owner?: { userType?: string | null } | null }): string {
+  if (vehicle.department === "Visitante Temporal") return "Visitante";
+
+  // Fuente más fiable: el campo userType del Student propietario
+  const ownerType = vehicle.owner?.userType?.trim().toLowerCase();
+  if (ownerType) {
+    if (ownerType.includes("estudiante")) return "Estudiante";
+    if (ownerType.includes("docente") || ownerType.includes("facultad") || ownerType.includes("profesor")) return "Docente";
+    if (ownerType.includes("admin") || ownerType.includes("personal") || ownerType.includes("administrativo")) return "Administrativo";
+  }
+
+  // Segunda fuente: inferir del departamento del vehículo
+  const dept = vehicle.department?.trim().toLowerCase();
+  if (dept) {
+    if (dept.includes("visitante")) return "Visitante";
+  }
+
+  return "Personal";
+}
+
 const router = Router();
 
 /**
@@ -214,7 +242,7 @@ async function handleRfidLogic(req: Request, res: Response) {
           data: {
             plate: vehicle.plate,
             rfidTag: normalizedUid,
-            userType: isVisitor ? "Visitante" : "Estudiante/Personal",
+            userType: isVisitor ? "Visitante" : resolveUserType(vehicle),
             zone: activeZone,
             status: false,
             method: "RFID",
@@ -239,7 +267,7 @@ async function handleRfidLogic(req: Request, res: Response) {
           data: {
             plate: vehicle.plate,
             rfidTag: normalizedUid,
-            userType: isVisitor ? "Visitante" : "Estudiante/Personal",
+            userType: isVisitor ? "Visitante" : resolveUserType(vehicle),
             zone: activeZone,
             status: false,
             method: "RFID",

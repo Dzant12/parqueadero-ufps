@@ -98,17 +98,11 @@ export default async function AnalyticsPage({ searchParams }: Props) {
       : fmt(dateFrom);
   }
 
-  // Mapeo semántico de los filtros del selector de usuario
-  let dbUserType: string | undefined = undefined;
-  if (userType !== "all") {
-    if (userType === "Facultad") {
-      dbUserType = "Docente";
-    } else if (userType === "Personal") {
-      dbUserType = "Administrativo";
-    } else {
-      dbUserType = userType;
-    }
-  }
+  // El filtro de usuario envía el valor canónico directamente (Estudiante, Docente, Administrativo, Personal, Visitante).
+  // La cláusula WHERE busca ese valor normalizado en la BD.
+  // Para datos históricos sucios (p. ej. "Estudiante/Personal", "ESTUDIANTE"), la normalización
+  // se aplica en el procesamiento estadístico, no en el filtro de BD.
+  const dbUserType: string | undefined = userType !== "all" ? userType : undefined;
 
   // Cláusula de filtrado de base de datos
   const whereClause: Prisma.AccessLogWhereInput = {
@@ -166,21 +160,36 @@ export default async function AnalyticsPage({ searchParams }: Props) {
   // ----------------------------------------------------------------------------
   // 3. Procesamiento Estadístico para Distribución de Usuarios
   // ----------------------------------------------------------------------------
+  // Función de normalización para consolidar valores históricos inconsistentes en la BD
+  // (p. ej. "Estudiante/Personal", "ESTUDIANTE", "Docente", "Administrativo" → etiquetas canónicas)
+  const normalizeUserType = (raw: string | null): string => {
+    const t = (raw ?? "").trim().toLowerCase();
+    if (!t || t === "desconocido") return "Desconocido";
+    if (t === "visitante") return "Visitante";
+    if (t.includes("estudiante") && !t.includes("personal")) return "Estudiante";
+    if (t.includes("docente") || t.includes("facultad") || t.includes("profesor")) return "Docente";
+    if (t.includes("admin") || t.includes("administrativo")) return "Administrativo";
+    if (t.includes("personal") || t === "personal") return "Personal";
+    // Caso especial heredado: "estudiante/personal" era un genérico
+    // → lo mapeamos a "Personal" para no perder el dato pero sin duplicar "Estudiante"
+    if (t.includes("estudiante/personal") || t === "estudiante/personal") return "Personal";
+    return raw ?? "Desconocido";
+  };
+
   const userTypeDistribution = logs.reduce((acc: Record<string, number>, log) => {
-    let label = log.userType || "Desconocido";
-    if (label === "Docente") label = "Facultad";
-    if (label === "Administrativo") label = "Personal";
+    const label = normalizeUserType(log.userType);
     acc[label] = (acc[label] || 0) + 1;
     return acc;
   }, {});
 
   const totalLogsSafe = logs.length || 1;
   const distributionColors: Record<string, string> = {
-    "Estudiante": "bg-[var(--color-primary)]",
-    "Facultad": "bg-[var(--color-tertiary)]",
-    "Personal": "bg-[var(--color-secondary)]",
-    "Visitante": "bg-emerald-500",
-    "Desconocido": "bg-slate-400"
+    "Estudiante":     "bg-[var(--color-primary)]",
+    "Docente":        "bg-[var(--color-tertiary)]",
+    "Administrativo": "bg-[var(--color-secondary)]",
+    "Personal":       "bg-slate-500",
+    "Visitante":      "bg-emerald-500",
+    "Desconocido":    "bg-slate-400",
   };
 
   const distribution = Object.entries(userTypeDistribution).map(([label, count]) => ({
