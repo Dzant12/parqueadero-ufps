@@ -111,16 +111,43 @@ export async function verifyPlate(plate: string, zone?: string) {
         }
       }
       
-      // Resolución del tipo real a partir del userType del propietario o del vehículo
+      // Resolución del tipo real a partir del userType del propietario
       let resolvedType = "Personal";
       const ownerType = vehicle.owner?.userType?.trim().toLowerCase();
       if (ownerType) {
-        if (ownerType.includes("estudiante")) resolvedType = "Estudiante";
-        else if (ownerType.includes("docente") || ownerType.includes("facultad") || ownerType.includes("profesor")) resolvedType = "Docente";
-        else if (ownerType.includes("admin") || ownerType.includes("personal") || ownerType.includes("administrativo")) resolvedType = "Administrativo";
+        // Tipos de Estudiante (del CSV de la universidad)
+        if (
+          ownerType.includes("estudiante") ||
+          ownerType.includes("pregrado") ||
+          ownerType.includes("postgrado") ||
+          ownerType.includes("primer semestre") ||
+          ownerType.includes("preuniversitario") ||
+          ownerType.includes("egresado") ||
+          ownerType.includes("estadistico") ||
+          ownerType.includes("sies")
+        ) resolvedType = "Estudiante";
+        // Tipos de Docente
+        else if (
+          ownerType.includes("docente") ||
+          ownerType.includes("facultad") ||
+          ownerType.includes("profesor") ||
+          ownerType === "t"
+        ) resolvedType = "Docente";
+        // Tipos de Administrativo
+        else if (
+          ownerType.includes("admin") ||
+          ownerType.includes("administrativo") ||
+          ownerType.includes("personal") ||
+          ownerType === "pt" ||
+          ownerType.includes("staff") ||
+          ownerType === "s"
+        ) resolvedType = "Administrativo";
+        // Visitantes/Invitados
+        else if (ownerType.includes("invitado") || ownerType.includes("investigador")) resolvedType = "Visitante";
       } else if (vehicle.department === "Visitante Temporal") {
         resolvedType = "Visitante";
       }
+
 
       return { 
         status: "authorized", 

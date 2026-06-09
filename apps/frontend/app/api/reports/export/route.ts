@@ -5,6 +5,39 @@ import type { AccessLog } from "../../../../generated/prisma/client";
 export const dynamic = "force-dynamic";
 
 // ---------------------------------------------------------------------------
+// Normaliza valores históricos sucios de userType a etiquetas canónicas
+// ---------------------------------------------------------------------------
+function normalizeUserType(raw: string | null): string {
+  const t = (raw ?? "").trim().toLowerCase();
+  if (!t || t === "desconocido") return "Desconocido";
+  if (t === "visitante" || t.includes("invitado") || t.includes("investigador")) return "Visitante";
+  // Tipos de Estudiante (del CSV de la universidad y del formulario de registro)
+  if (
+    t.includes("estudiante") ||
+    t.includes("pregrado") ||
+    t.includes("postgrado") ||
+    t.includes("primer semestre") ||
+    t.includes("preuniversitario") ||
+    t.includes("egresado") ||
+    t.includes("estadistico") ||
+    t.includes("sies")
+  ) return "Estudiante";
+  // Tipos de Docente
+  if (t.includes("docente") || t.includes("facultad") || t.includes("profesor") || t === "t") return "Docente";
+  // Tipos de Administrativo
+  if (
+    t.includes("admin") ||
+    t.includes("administrativo") ||
+    t === "pt" ||
+    t.includes("staff") ||
+    t === "s"
+  ) return "Administrativo";
+  if (t.includes("personal") || t === "personal") return "Personal";
+  if (t.includes("estudiante/personal") || t === "estudiante/personal") return "Personal";
+  return raw ?? "Desconocido";
+}
+
+// ---------------------------------------------------------------------------
 // Obtiene la hora en Bogotá (0-23) a partir de un Date UTC
 // Colombia es siempre UTC-5, sin horario de verano → aritmética directa
 // ---------------------------------------------------------------------------
@@ -137,7 +170,7 @@ export async function GET(request: NextRequest) {
       timestamp: row.timestamp.toISOString(),
       plate:     row.plate,
       ownerName,
-      userType:  row.userType || "",
+      userType:  normalizeUserType(row.userType),
       zone:      row.zone,
       status:    row.status ? "PERMITIDO" : "DENEGADO",
       reason:    row.reason || "",

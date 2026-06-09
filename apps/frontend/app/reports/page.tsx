@@ -200,13 +200,45 @@ export default async function ReportsPage({
     { label: "Acceso Autorizado", value: `${authPct}%`, pct: Number(authPct), barColor: "bg-[var(--color-primary)]" },
   ];
 
+  // Normaliza valores históricos sucios de userType (misma lógica que en analytics)
+  const normalizeUserType = (raw: string | null): string => {
+    const t = (raw ?? "").trim().toLowerCase();
+    if (!t || t === "desconocido") return "Desconocido";
+    if (t === "visitante" || t.includes("invitado") || t.includes("investigador")) return "Visitante";
+    // Tipos de Estudiante (del CSV de la universidad y del formulario de registro)
+    if (
+      t.includes("estudiante") ||
+      t.includes("pregrado") ||
+      t.includes("postgrado") ||
+      t.includes("primer semestre") ||
+      t.includes("preuniversitario") ||
+      t.includes("egresado") ||
+      t.includes("estadistico") ||
+      t.includes("sies")
+    ) return "Estudiante";
+    // Tipos de Docente
+    if (t.includes("docente") || t.includes("facultad") || t.includes("profesor") || t === "t") return "Docente";
+    // Tipos de Administrativo
+    if (
+      t.includes("admin") ||
+      t.includes("administrativo") ||
+      t === "pt" ||
+      t.includes("staff") ||
+      t === "s"
+    ) return "Administrativo";
+    if (t.includes("personal") || t === "personal") return "Personal";
+    if (t.includes("estudiante/personal") || t === "estudiante/personal") return "Personal";
+    return raw ?? "Desconocido";
+  };
+
   const getUserTypeCls = (type: string) => {
     switch (type) {
-      case "Facultad":      return "badge-primary";
-      case "Estudiante":    return "badge-secondary";
-      case "Visitante":     return "badge-warning";
-      case "Administrador": return "badge-neutral";
-      default:              return "badge-neutral";
+      case "Estudiante":     return "badge-secondary";
+      case "Docente":        return "badge-primary";
+      case "Administrativo": return "badge-neutral";
+      case "Personal":       return "badge-neutral";
+      case "Visitante":      return "badge-warning";
+      default:               return "badge-neutral";
     }
   };
 
@@ -371,7 +403,7 @@ export default async function ReportsPage({
                     <span className="text-sm font-semibold text-[var(--color-on-surface)]">{row.ownerName}</span>
                   </td>
                   <td className="table-cell">
-                    <span className={`badge ${getUserTypeCls(row.userType)}`}>{row.userType}</span>
+                    <span className={`badge ${getUserTypeCls(normalizeUserType(row.userType))}`}>{normalizeUserType(row.userType)}</span>
                   </td>
                   <td className="table-cell">
                     <span className="text-xs text-[var(--color-on-surface-variant)] font-medium font-[var(--font-label)]">{row.zone}</span>

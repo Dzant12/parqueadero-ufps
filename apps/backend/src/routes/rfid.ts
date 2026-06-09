@@ -38,16 +38,43 @@ function resolveUserType(vehicle: { department: string; owner?: { userType?: str
   // Fuente más fiable: el campo userType del Student propietario
   const ownerType = vehicle.owner?.userType?.trim().toLowerCase();
   if (ownerType) {
-    if (ownerType.includes("estudiante")) return "Estudiante";
-    if (ownerType.includes("docente") || ownerType.includes("facultad") || ownerType.includes("profesor")) return "Docente";
-    if (ownerType.includes("admin") || ownerType.includes("personal") || ownerType.includes("administrativo")) return "Administrativo";
+    // Tipos que corresponden a Estudiante (del CSV de la universidad)
+    if (
+      ownerType.includes("estudiante") ||
+      ownerType.includes("pregrado") ||
+      ownerType.includes("postgrado") ||
+      ownerType.includes("primer semestre") ||
+      ownerType.includes("preuniversitario") ||
+      ownerType.includes("egresado") ||
+      ownerType.includes("estadistico") ||
+      ownerType.includes("sies")
+    ) return "Estudiante";
+
+    // Tipos que corresponden a Docente
+    if (
+      ownerType.includes("docente") ||
+      ownerType.includes("facultad") ||
+      ownerType.includes("profesor") ||
+      ownerType === "t"
+    ) return "Docente";
+
+    // Tipos que corresponden a Administrativo
+    if (
+      ownerType.includes("admin") ||
+      ownerType.includes("administrativo") ||
+      ownerType.includes("personal") ||
+      ownerType === "pt" ||
+      ownerType.includes("staff") ||
+      ownerType === "s"
+    ) return "Administrativo";
+
+    // Tipos de visitante/invitado
+    if (ownerType.includes("invitado") || ownerType.includes("investigador")) return "Visitante";
   }
 
   // Segunda fuente: inferir del departamento del vehículo
   const dept = vehicle.department?.trim().toLowerCase();
-  if (dept) {
-    if (dept.includes("visitante")) return "Visitante";
-  }
+  if (dept?.includes("visitante")) return "Visitante";
 
   return "Personal";
 }

@@ -165,13 +165,30 @@ export default async function AnalyticsPage({ searchParams }: Props) {
   const normalizeUserType = (raw: string | null): string => {
     const t = (raw ?? "").trim().toLowerCase();
     if (!t || t === "desconocido") return "Desconocido";
-    if (t === "visitante") return "Visitante";
-    if (t.includes("estudiante") && !t.includes("personal")) return "Estudiante";
-    if (t.includes("docente") || t.includes("facultad") || t.includes("profesor")) return "Docente";
-    if (t.includes("admin") || t.includes("administrativo")) return "Administrativo";
+    if (t === "visitante" || t.includes("invitado") || t.includes("investigador")) return "Visitante";
+    // Tipos de Estudiante (del CSV de la universidad y del formulario de registro)
+    if (
+      t.includes("estudiante") ||
+      t.includes("pregrado") ||
+      t.includes("postgrado") ||
+      t.includes("primer semestre") ||
+      t.includes("preuniversitario") ||
+      t.includes("egresado") ||
+      t.includes("estadistico") ||
+      t.includes("sies")
+    ) return "Estudiante";
+    // Tipos de Docente
+    if (t.includes("docente") || t.includes("facultad") || t.includes("profesor") || t === "t") return "Docente";
+    // Tipos de Administrativo
+    if (
+      t.includes("admin") ||
+      t.includes("administrativo") ||
+      t === "pt" ||
+      t.includes("staff") ||
+      t === "s"
+    ) return "Administrativo";
     if (t.includes("personal") || t === "personal") return "Personal";
     // Caso especial heredado: "estudiante/personal" era un genérico
-    // → lo mapeamos a "Personal" para no perder el dato pero sin duplicar "Estudiante"
     if (t.includes("estudiante/personal") || t === "estudiante/personal") return "Personal";
     return raw ?? "Desconocido";
   };

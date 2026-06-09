@@ -49,12 +49,14 @@ export async function updateRegistrationStatus(id: number, status: string, rejec
           where: { cardnumber: reg.institutionalCode },
           update: {
             email: reg.email,
+            userType: reg.userType,   // Propagar el tipo de usuario desde la solicitud
           },
           create: {
             cardnumber: reg.institutionalCode,
             firstname,
             surname,
             email: reg.email,
+            userType: reg.userType,   // Guardar el tipo de usuario al crear el estudiante
           },
         });
 
